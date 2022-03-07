@@ -1,1 +1,4 @@
 .vscode/
+run.bat
+opglrenderer.exe
+glfw3.dll
