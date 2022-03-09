@@ -1,6 +1,6 @@
 #include "stbi_backend.h"
 #define STB_IMAGE_IMPLEMENTATION
-#include <stbi_image.h>
+#include "stbi_image.h"
 
 char* stbi_backend::getImageFromPath(char* path, int* width, int* height)
 {
