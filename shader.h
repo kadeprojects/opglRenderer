@@ -21,7 +21,7 @@ public:
         glAttachShader(shaderProgram, fragment);
         glLinkProgram(shaderProgram);
         
-        printf("Successfully compiled shader!");
+        printf("\nSuccessfully compiled shader!");
 
         glDeleteShader(vertex);
         glDeleteShader(fragment);

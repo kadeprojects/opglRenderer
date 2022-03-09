@@ -1,7 +1,9 @@
 #include "includes.h"
 #include "texture.h"
 #include "shader.h"
-//#include "stbi_backend.h"
+#include "stbi_backend.h"
+#include <glm/common.hpp>
+#include <glm/matrix.hpp>
 
 int main(void)
 {
@@ -61,9 +63,11 @@ int main(void)
 
     int w,h;
 
-    //char* data = stbi_backend::getImageFromPath("test.png",&w,&h);
+    char* data = stbi_backend::getImageFromPath("test.png",&w,&h);
 
-    //Texture* testText = new Texture(w,h,data);
+    Texture* testText = new Texture(w,h,data);
+
+    printf("\n%ix%i",w,h);
 
     while (!glfwWindowShouldClose(window))
     {
