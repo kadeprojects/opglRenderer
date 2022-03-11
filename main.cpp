@@ -1,9 +1,6 @@
 #include "includes.h"
-#include "texture.h"
-#include "shader.h"
 #include "stbi_backend.h"
-#include <glm/common.hpp>
-#include <glm/matrix.hpp>
+#include "rendering.h"
 
 int main(void)
 {
@@ -33,7 +30,7 @@ int main(void)
     // create shaders
     
     char* vert = "#version 150 core" 
-    "in vec3 v_position;"
+    "in vec2 v_position;"
     "in vec2 v_uv;"
     "in vec4 v_colour;"
     "out vec2 f_uv;"
@@ -43,7 +40,7 @@ int main(void)
     "{"
         "f_uv = v_uv;"
         "f_colour = v_colour;"
-        "gl_Position = u_projection * vec4(v_position.xyz, 0.0, 1.0);"
+        "gl_Position = u_projection * vec4(v_position.xy, 0.0, 1.0);"
     "}";
 
     char* frag = "#version 150 core" 
@@ -61,6 +58,8 @@ int main(void)
     Shader* shad = new Shader(vert,frag);
     shad->use();
 
+    Rendering::initRendering(shad);
+
     int w,h;
 
     char* data = stbi_backend::getImageFromPath("test.png",&w,&h);
@@ -74,7 +73,15 @@ int main(void)
         glViewport(0, 0, 1280, 720);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        
+        Rect r;
+        r.x = 40;
+        r.y = 40;
+        r.w = 100;
+        r.h = 100;
+
+        Rendering::pushQuad(r, testText, shad);
+
+        Rendering::pushBatch();
 
         glfwSwapBuffers(window);
         glfwPollEvents();
