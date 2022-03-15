@@ -2,6 +2,40 @@
 #include "stbi_backend.h"
 #include "rendering.h"
 
+char *generic_shader_vert = "\
+#version 150 core\n\
+in vec2 v_position;\
+in vec2 v_uv;\
+in vec4 v_colour;\
+out vec2 f_uv;\
+out vec4 f_colour;\
+uniform mat4 u_projection;\
+void main()\
+{\
+f_uv = v_uv;\
+f_colour = v_colour;\
+gl_Position = u_projection * vec4(v_position.xy, 0.0, 1.0);\
+}";
+char *generic_shader_frag = "\
+#version 150 core\n\
+uniform sampler2D u_texture;\
+in vec2 f_uv;\
+in vec4 f_colour;\
+out vec4 o_colour;\
+void main()\
+{\
+o_colour = texture(u_texture, f_uv) * f_colour;\
+if (o_colour.a == 0.0)\
+{\
+discard;\
+}\
+}";
+
+static void error_callback(int error, const char* description)
+{
+    fprintf(stderr, "Error: %s\n", description);
+}
+
 int main(void)
 {
     GLFWwindow* window;
@@ -14,7 +48,7 @@ int main(void)
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-
+    glfwSetErrorCallback(error_callback);
     window = glfwCreateWindow(1280, 720, "OPGLRenderer", NULL, NULL);
     if (!window)
     {
@@ -23,39 +57,13 @@ int main(void)
     }
 
     glfwMakeContextCurrent(window);
-    gladLoadGL();
+    gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
     glfwSwapInterval(1);
 
 
     // create shaders
-    
-    char* vert = "#version 150 core" 
-    "in vec2 v_position;"
-    "in vec2 v_uv;"
-    "in vec4 v_colour;"
-    "out vec2 f_uv;"
-    "out vec4 f_colour;"
-    "uniform mat4 u_projection;"
-    "void main()"
-    "{"
-        "f_uv = v_uv;"
-        "f_colour = v_colour;"
-        "gl_Position = u_projection * vec4(v_position.xy, 0.0, 1.0);"
-    "}";
 
-    char* frag = "#version 150 core" 
-    "uniform sampler2D u_texture;"
-    "in vec2 f_uv;"
-    "in vec4 f_colour;"
-    "out vec4 o_colour;"
-    "void main()"
-    "{"
-        "o_colour = texture (u_texture, f_uv) * f_colour;"
-        "if (o_colour.a == 0.0)"
-            "discard;"
-    "}";
-
-    Shader* shad = new Shader(vert,frag);
+    Shader* shad = new Shader(generic_shader_vert,generic_shader_frag);
     shad->use();
 
     Rendering::initRendering(shad);

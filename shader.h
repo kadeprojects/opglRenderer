@@ -19,12 +19,14 @@ public:
         shaderProgram = glCreateProgram();
         glAttachShader(shaderProgram, vertex);
         glAttachShader(shaderProgram, fragment);
+
+        glBindAttribLocation(shaderProgram, 0, "v_position");
+        glBindAttribLocation(shaderProgram, 1, "v_uv");
+        glBindAttribLocation(shaderProgram, 2, "v_color");
+
         glLinkProgram(shaderProgram);
         
         printf("\nSuccessfully compiled shader!");
-
-        glDeleteShader(vertex);
-        glDeleteShader(fragment);
     }
 
     void use() 

@@ -21,6 +21,7 @@ void Rendering::pushQuad(Rect r, Texture* tex, Shader* shad)
         batch_shader = shad;
         batch_texture = tex;
     }
+
     // top left
     GLVertex vert;
     vert.x = r.x;
@@ -107,10 +108,13 @@ void Rendering::pushQuad(Rect r, Texture* tex, Shader* shad)
 
 void Rendering::initRendering(Shader* shad)
 {
-    projection = glm::ortho(0,1280,0,720);
+    projection = glm::ortho(0.0f,(float)1280,(float)720, 0.0f, -1.0f, 1.0f);
 
     shad->use();
-	glUniformMatrix4fv(glGetUniformLocation(shad->shaderProgram, "u_projection"), 1, GL_FALSE, &projection[0][0]);
+    glUniformMatrix4fv(glGetUniformLocation(shad->shaderProgram, "u_projection"), 1, GL_FALSE, &projection[0][0]);
+
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
 
     glGenVertexArrays(1, &batch_vao);
     glBindVertexArray(batch_vao);
@@ -123,11 +127,13 @@ void Rendering::initRendering(Shader* shad)
 
 void Rendering::pushBatch()
 {
-    if (batch_buffer.size() > 0)
+    if (batch_buffer.size() != 0)
     {
         //printf("\nDrawing %i", batch_buffer.size());
 
-        
+        batch_shader->use();
+        batch_texture->use();
+
         glBindVertexArray(batch_vao);
 
         glBindBuffer(GL_ARRAY_BUFFER, batch_vbo);
@@ -136,11 +142,11 @@ void Rendering::pushBatch()
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(GLVertex), (GLvoid*)offsetof(GLVertex, u));
         glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(GLVertex), (GLvoid*)offsetof(GLVertex, r));
         
-        glBufferData(GL_ARRAY_BUFFER, sizeof(GLVertex) * 3, &batch_buffer, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(GLVertex) * batch_buffer.size(), batch_buffer.data(), GL_STATIC_DRAW);
         
         glDrawArrays(GL_TRIANGLES, 0, sizeof(batch_buffer));
+        batch_buffer.clear();
     }
-    batch_buffer.clear();
 
     batch_texture = NULL;
     batch_shader = NULL;
