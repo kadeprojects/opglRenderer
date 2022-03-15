@@ -26,6 +26,8 @@ void Rendering::pushQuad(Rect r, Texture* tex, Shader* shad)
     GLVertex vert;
     vert.x = r.x;
     vert.y = r.y;
+    vert.u = 0;
+    vert.v = 0;
     //vert.z = r.z;
     vert.r = 255;
     vert.g = 255;
@@ -36,6 +38,8 @@ void Rendering::pushQuad(Rect r, Texture* tex, Shader* shad)
     GLVertex vert1;
     vert1.x = r.x;
     vert1.y = r.y + r.h;
+    vert1.u = 0;
+    vert1.v = 1;
     //vert1.z = r.z;
     vert1.r = 255;
     vert1.g = 255;
@@ -46,6 +50,8 @@ void Rendering::pushQuad(Rect r, Texture* tex, Shader* shad)
     GLVertex vert2;
     vert2.x = r.x + r.w;
     vert2.y = r.y;
+    vert2.u = 1;
+    vert2.v = 0;
     //vert2.z = r.z;
     vert2.r = 255;
     vert2.g = 255;
@@ -56,6 +62,8 @@ void Rendering::pushQuad(Rect r, Texture* tex, Shader* shad)
     GLVertex vert3;
     vert3.x = r.x + r.w;
     vert3.y = r.y + r.h;
+    vert3.u = 1;
+    vert3.v = 1;
     //vert3.z = r.z;
     vert3.r = 255;
     vert3.g = 255;
