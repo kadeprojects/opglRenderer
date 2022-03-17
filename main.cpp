@@ -80,6 +80,7 @@ int main(void)
     {
         glViewport(0, 0, 1280, 720);
         glClear(GL_COLOR_BUFFER_BIT);
+        glClearColor(1,.5,.5,1);
 
         Rect r;
         r.x = 40;

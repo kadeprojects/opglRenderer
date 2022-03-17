@@ -29,11 +29,10 @@ void Rendering::pushQuad(Rect r, Texture* tex, Shader* shad)
     vert.u = 0;
     vert.v = 0;
     //vert.z = r.z;
-    vert.r = 255;
-    vert.g = 255;
-    vert.b = 255;
+    vert.r = 1;
+    vert.g = 1;
+    vert.b = 1;
     vert.a = 1;
-    batch_buffer.push_back(vert);
     // bottom left
     GLVertex vert1;
     vert1.x = r.x;
@@ -41,11 +40,10 @@ void Rendering::pushQuad(Rect r, Texture* tex, Shader* shad)
     vert1.u = 0;
     vert1.v = 1;
     //vert1.z = r.z;
-    vert1.r = 255;
-    vert1.g = 255;
-    vert1.b = 255;
+    vert1.r = 1;
+    vert1.g = 1;
+    vert1.b = 1;
     vert1.a = 1;
-    batch_buffer.push_back(vert1);
     // top right
     GLVertex vert2;
     vert2.x = r.x + r.w;
@@ -53,11 +51,10 @@ void Rendering::pushQuad(Rect r, Texture* tex, Shader* shad)
     vert2.u = 1;
     vert2.v = 0;
     //vert2.z = r.z;
-    vert2.r = 255;
-    vert2.g = 255;
-    vert2.b = 255;
+    vert2.r = 1;
+    vert2.g = 1;
+    vert2.b = 1;
     vert2.a = 1;
-    batch_buffer.push_back(vert2);
     // bottom right
     GLVertex vert3;
     vert3.x = r.x + r.w;
@@ -65,10 +62,15 @@ void Rendering::pushQuad(Rect r, Texture* tex, Shader* shad)
     vert3.u = 1;
     vert3.v = 1;
     //vert3.z = r.z;
-    vert3.r = 255;
-    vert3.g = 255;
-    vert3.b = 255;
+    vert3.r = 1;
+    vert3.g = 1;
+    vert3.b = 1;
     vert3.a = 1;
+    batch_buffer.push_back(vert);
+    batch_buffer.push_back(vert1);
+    batch_buffer.push_back(vert2);
+    batch_buffer.push_back(vert2);
+    batch_buffer.push_back(vert1);
     batch_buffer.push_back(vert3);
     /*
     // z-tl
@@ -152,7 +154,7 @@ void Rendering::pushBatch()
         
         glBufferData(GL_ARRAY_BUFFER, sizeof(GLVertex) * batch_buffer.size(), batch_buffer.data(), GL_STATIC_DRAW);
         
-        glDrawArrays(GL_TRIANGLES, 0, sizeof(batch_buffer));
+        glDrawArrays(GL_TRIANGLES, 0, batch_buffer.size());
         batch_buffer.clear();
     }
 

@@ -9,9 +9,10 @@
         float w, h, size;
     };
     struct GLVertex {
-        float x, y, z;
+        float x, y;
         float u, v;
-	    float r, g, b, a;
+	    float r, g, b;
+        float a;
     };
 
 class Rendering {
