@@ -9,9 +9,11 @@ GLuint batch_vbo;
 Texture* batch_texture;
 Shader* batch_shader;
 
+Shader* Rendering::generalShader = nullptr;
+
 std::vector<GLVertex> batch_buffer;
 
-void Rendering::pushQuad(Rect r, Texture* tex, Shader* shad)
+void Rendering::pushQuad(Rect r, Rect src,  Texture* tex, Shader* shad)
 {
     if (batch_texture != tex || batch_shader != shad)
     {
@@ -26,8 +28,8 @@ void Rendering::pushQuad(Rect r, Texture* tex, Shader* shad)
     GLVertex vert;
     vert.x = r.x;
     vert.y = r.y;
-    vert.u = 0;
-    vert.v = 0;
+    vert.u = src.x;
+    vert.v = src.y;
     //vert.z = r.z;
     vert.r = 1;
     vert.g = 1;
@@ -37,8 +39,8 @@ void Rendering::pushQuad(Rect r, Texture* tex, Shader* shad)
     GLVertex vert1;
     vert1.x = r.x;
     vert1.y = r.y + r.h;
-    vert1.u = 0;
-    vert1.v = 1;
+    vert1.u = src.x;
+    vert1.v = src.y + src.h;
     //vert1.z = r.z;
     vert1.r = 1;
     vert1.g = 1;
@@ -48,8 +50,8 @@ void Rendering::pushQuad(Rect r, Texture* tex, Shader* shad)
     GLVertex vert2;
     vert2.x = r.x + r.w;
     vert2.y = r.y;
-    vert2.u = 1;
-    vert2.v = 0;
+    vert2.u = src.x + src.w;
+    vert2.v = src.y;
     //vert2.z = r.z;
     vert2.r = 1;
     vert2.g = 1;
@@ -59,8 +61,8 @@ void Rendering::pushQuad(Rect r, Texture* tex, Shader* shad)
     GLVertex vert3;
     vert3.x = r.x + r.w;
     vert3.y = r.y + r.h;
-    vert3.u = 1;
-    vert3.v = 1;
+    vert3.u = src.x + src.w;
+    vert3.v = src.y + src.h;
     //vert3.z = r.z;
     vert3.r = 1;
     vert3.g = 1;

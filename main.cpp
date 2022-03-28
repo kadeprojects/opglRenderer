@@ -1,6 +1,4 @@
-#include "includes.h"
-#include "stbi_backend.h"
-#include "rendering.h"
+#include "objects.h"
 
 char *generic_shader_vert = "\
 #version 150 core\n\
@@ -31,6 +29,8 @@ discard;\
 }\
 }";
 
+
+
 static void error_callback(int error, const char* description)
 {
     fprintf(stderr, "Error: %s\n", description);
@@ -60,21 +60,16 @@ int main(void)
     gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
     glfwSwapInterval(1);
 
-
     // create shaders
 
-    Shader* shad = new Shader(generic_shader_vert,generic_shader_frag);
-    shad->use();
+    Rendering::generalShader = new Shader(generic_shader_vert,generic_shader_frag);
+    Rendering::generalShader->use();
 
-    Rendering::initRendering(shad);
+    Rendering::initRendering(Rendering::generalShader);
 
-    int w,h;
-
-    char* data = stbi_backend::getImageFromPath("test.png",&w,&h);
-
-    Texture* testText = new Texture(w,h,data);
-
-    printf("\n%ix%i",w,h);
+    SpriteSheet* sheet = new SpriteSheet("Assets/tileset.png");
+    
+    Sprite* spr = new Sprite(32,32,sheet);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -82,13 +77,7 @@ int main(void)
         glClear(GL_COLOR_BUFFER_BIT);
         glClearColor(1,.5,.5,1);
 
-        Rect r;
-        r.x = 40;
-        r.y = 40;
-        r.w = 100;
-        r.h = 100;
-
-        Rendering::pushQuad(r, testText, shad);
+        spr->draw();
 
         Rendering::pushBatch();
 

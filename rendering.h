@@ -17,7 +17,9 @@
 
 class Rendering {
 public:
+    static Shader* generalShader;
+
     static void initRendering(Shader* shad);
-    static void pushQuad(Rect r, Texture* tex, Shader* shad);
+    static void pushQuad(Rect r, Rect src, Texture* tex, Shader* shad);
     static void pushBatch();
 };
