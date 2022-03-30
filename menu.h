@@ -3,22 +3,22 @@
 
 class Menu {
 public:
-    std::vector<Object> objects;
-    void create() {};
-    void update() {};
+    std::vector<Object*> objects;
+    virtual void create() {};
+    virtual void update() = 0;
 
     void draw() {
-        for(Object obj : objects)
-            obj.draw();
+        for(Object* obj : objects)
+            obj->draw();
     };
 
-    void createObject(Object ob) {
+    void createObject(Object* ob) {
         objects.push_back(ob);
     }
-    void deleteObject(Object ob) {
+    void deleteObject(Object* ob) {
         for(int i = 0; i < objects.size(); i++)
         {
-            if (objects[i].id == ob.id)
+            if (objects[i]->id == ob->id)
             {
                 // auto freed since this a stack variable
                 objects.erase(objects.begin() + i);
@@ -30,35 +30,30 @@ public:
 
 class MenuManager {
 public:
-    static Menu currentMenu;
+    static Menu* currentMenu;
 
-    static void switchMenu(Menu ofMenu, bool checkForPrev = true)
+    static void switchMenu(Menu* ofMenu, bool checkForPrev = true)
     {
+        printf("\nchanging menu");
         KeyboardManager::removeAllCallbacks();
         if (checkForPrev)
         {   
-            for(Object ob : currentMenu.objects)
-                currentMenu.deleteObject(ob);
+            for(Object* ob : currentMenu->objects)
+                currentMenu->deleteObject(ob);
+            delete currentMenu;
         }
         currentMenu = ofMenu;
-        ofMenu.create();
+        currentMenu->create();
+        printf("\nswitched!");
     }
 };
 
-Menu MenuManager::currentMenu;
-
-class Editor : public Menu {
-public:
-    void update()
-    {
-        
-    }
-};
+Menu* MenuManager::currentMenu;
 
 class Gameplay : public Menu {
 public:
     SpriteSheet* sheet;
-    std::vector<Sprite> sprites;
+    std::vector<Sprite*> sprites;
 
     void key(int key, int action, int mods)
     {
@@ -67,13 +62,12 @@ public:
 
     void create() {
         sheet = new SpriteSheet("Assets/tileset.png");
-        Sprite spr = Sprite(0,0,sheet);
+        Sprite* spr = new Sprite(0,0,sheet);
         createObject(spr);
-
         KeyboardManager::registerCallback((keyPress)&key);
     }
     void update() {
- 
+
     }
 
     ~Gameplay()

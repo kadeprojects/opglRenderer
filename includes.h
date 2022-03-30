@@ -1,8 +1,5 @@
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
 #include <stdio.h>
-#include <glm/common.hpp>
-#include <glm/matrix.hpp>
-#include <GL/gl.h>
 #include <vector>
+#include <glm/gtc/matrix_transform.hpp>
+#define DEFINE_callbacks
 #include "glfw_backend.h"

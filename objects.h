@@ -2,22 +2,20 @@
 
 class Object {
 public:
-    static int globalId;
     int id;
     int x, y;
     int w, h;
     Object(int _x, int _y)
     {
+        static int globalId;
         id = globalId;
         globalId++;
         x = _x;
         y = _y;
     }
 
-    void draw() {}
+    virtual void draw() {}
 };
-
-int Object::globalId = 0;
 
 class SpriteSheet {
 public:

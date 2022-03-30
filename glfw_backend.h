@@ -4,6 +4,7 @@
 #include <glm/matrix.hpp>
 #include <GL/gl.h>
 
+
 typedef void(__cdecl *keyPress)(int key,int action, int mods);
 
 struct keyCallback {
@@ -11,10 +12,13 @@ struct keyCallback {
     int id = 0;
 };
 
+std::vector<keyCallback> callbacks = {};
+int lastId = 0;
+GLFWwindow* window = nullptr;
+
 class KeyboardManager {
 public:
-    static std::vector<keyCallback> callbacks;
-    static int lastId;
+    
     static int registerCallback(keyPress call)
     {
         keyCallback callback;
@@ -49,15 +53,12 @@ public:
     }
 };
 
-std::vector<keyCallback> KeyboardManager::callbacks;
-int KeyboardManager::lastId = 0;
-
 class glfw_backend {
 public:
-    static GLFWwindow* window;
 
     static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
     {
+        printf("\nyo");
         KeyboardManager::disperseCallbacks(key,action,mods);
     }
     static void error_callback(int error, const char* description)
@@ -86,5 +87,3 @@ public:
         glfwSwapInterval(1);
     }
 };
-
-GLFWwindow* glfw_backend::window = nullptr;
