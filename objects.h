@@ -1,20 +1,23 @@
-#include "includes.h"
-#include "stbi_backend.h"
 #include "rendering.h"
 
 class Object {
 public:
+    static int globalId;
     int id;
     int x, y;
     int w, h;
     Object(int _x, int _y)
     {
+        id = globalId;
+        globalId++;
         x = _x;
         y = _y;
     }
 
     void draw() {}
 };
+
+int Object::globalId = 0;
 
 class SpriteSheet {
 public:
@@ -37,6 +40,11 @@ public:
         src.h = 32.f / (float)h;
         return src;
     }
+
+    ~SpriteSheet()
+    {
+        delete sheet;
+    }
 };
 
 class Sprite : public Object {
@@ -57,6 +65,11 @@ public:
         char* data = stbi_backend::getImageFromPath(spritePath,&w, &h);
         spriteTexture = new Texture(w, h, data);
         printf("\ncreated sprite from texture");
+    }
+
+    ~Sprite()
+    {
+        delete spriteTexture;
     }
 
     void draw() {

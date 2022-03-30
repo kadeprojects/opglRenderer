@@ -1,4 +1,4 @@
-#include "objects.h"
+#include "menu.h"
 
 char *generic_shader_vert = "\
 #version 150 core\n\
@@ -38,27 +38,9 @@ static void error_callback(int error, const char* description)
 
 int main(void)
 {
-    GLFWwindow* window;
+    glfw_backend::createWindow();
 
-    if (!glfwInit())
-    {
-        printf("uh oh");
-        return -1;
-    }
-
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-    glfwSetErrorCallback(error_callback);
-    window = glfwCreateWindow(1280, 720, "OPGLRenderer", NULL, NULL);
-    if (!window)
-    {
-        glfwTerminate();
-        return 0;
-    }
-
-    glfwMakeContextCurrent(window);
-    gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-    glfwSwapInterval(1);
+    GLFWwindow* window = glfw_backend::window;
 
     // create shaders
 
@@ -67,9 +49,7 @@ int main(void)
 
     Rendering::initRendering(Rendering::generalShader);
 
-    SpriteSheet* sheet = new SpriteSheet("Assets/tileset.png");
-    
-    Sprite* spr = new Sprite(32,32,sheet);
+    MenuManager::switchMenu(Gameplay(), false);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -77,9 +57,8 @@ int main(void)
         glClear(GL_COLOR_BUFFER_BIT);
         glClearColor(1,.5,.5,1);
 
-        spr->draw();
-
-        Rendering::pushBatch();
+        MenuManager::currentMenu.update();
+        MenuManager::currentMenu.draw();
 
         glfwSwapBuffers(window);
         glfwPollEvents();
