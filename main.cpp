@@ -38,7 +38,7 @@ static void error_callback(int error, const char* description)
 
 int main(void)
 {
-    glfw_backend::createWindow();
+    glfw_backend::createWindow(KeyboardManager::key_callback);
 
     // create shaders
 
