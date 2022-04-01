@@ -47,6 +47,7 @@ public:
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
         glfwSetErrorCallback(error_callback);
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
         window = glfwCreateWindow(1280, 720, "OPGLRenderer", NULL, NULL);
         glfwSetKeyCallback(window, keyCallback);
         glfwSetCursorPosCallback(window, cursor_position_callback);
