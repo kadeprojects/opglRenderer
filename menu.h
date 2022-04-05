@@ -79,23 +79,7 @@ public:
 
     void key(int key,int mods)
     {
-        printf("\nKey: %d", key);
-        int max = sheet->w / 32;
-        switch(key)
-        {
-            case GLFW_KEY_RIGHT_SHIFT:
-                spriteIndex++;
-                if (spriteIndex > max)
-                    spriteIndex = 0;
-                printf("\nNew index: %d",spriteIndex);
-            break;
-            case GLFW_KEY_LEFT_SHIFT:
-                spriteIndex--;
-                if (spriteIndex < 0)
-                    spriteIndex = max;
-                printf("\nNew index: %d",spriteIndex);
-            break;
-        }
+
     }
 
     void create() {
@@ -131,6 +115,10 @@ public:
             }
 
         }
+
+
+        // Editor imgui
+
     }
 
     ~EditorMenu()
@@ -162,9 +150,12 @@ public:
 
         Text* txt = new Text(40,40,"ARIAL.TTF",62,"test");
         createObject(txt);
+        created = true;
     }
     void update() {
-
+        ImGui::Begin("Assets");
+        ImGui::Image((ImTextureID)sheet->sheet->textureID, ImVec2(sheet->w,sheet->h), ImVec2(0, 1), ImVec2(1, 0));
+        ImGui::End();
     }
 
     ~Gameplay()
