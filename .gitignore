@@ -3,3 +3,4 @@ run.bat
 opglrenderer.exe
 glfw3.dll
 libstdc++-6.dll
+imgui.ini
