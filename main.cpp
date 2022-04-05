@@ -29,7 +29,31 @@ discard;\
 }\
 }";
 
+char *text_frag = "\
+#version 150 core\n\
+uniform sampler2D u_texture;\
+in vec2 f_uv;\
+in vec4 f_colour;\
+uniform vec3 textColor;\
+out vec4 o_colour;\
+void main()\
+{\
+vec4 sampled = vec4(1.0, 1.0, 1.0, texture(u_texture, f_uv).r);\
+o_colour = texture(u_texture, f_uv) * sampled;\
+if (o_colour.a == 0.0)\
+{\
+discard;\
+}\
+}";
 
+glm::mat4 projection;
+
+void project(Shader* shad)
+{
+
+    shad->use();
+    glUniformMatrix4fv(glGetUniformLocation(shad->shaderProgram, "u_projection"), 1, GL_FALSE, &projection[0][0]);
+}
 
 static void error_callback(int error, const char* description)
 {
@@ -45,7 +69,12 @@ int main(void)
     Rendering::generalShader = new Shader(generic_shader_vert,generic_shader_frag);
     Rendering::generalShader->use();
 
+    projection = glm::ortho(0.0f,(float)1280,(float)720, 0.0f, -1.0f, 1.0f);
+
     Rendering::initRendering(Rendering::generalShader);
+
+    Rendering::textShader = new Shader(generic_shader_vert,text_frag);
+    project(Rendering::textShader);
 
     freetype_backend::initFreeType();
 
@@ -78,8 +107,6 @@ int main(void)
 
 // rendering.cpp outputted here because of header hell
 
-glm::mat4 projection;
-
 GLuint batch_vao;
 GLuint batch_vbo;
 
@@ -87,6 +114,7 @@ Texture* batch_texture;
 Shader* batch_shader;
 
 Shader* Rendering::generalShader = nullptr;
+Shader* Rendering::textShader = nullptr;
 
 std::vector<GLVertex> batch_buffer;
 
@@ -95,10 +123,10 @@ void Rendering::pushQuad(Rect r, Rect src, Texture* tex, Shader* shad)
     if (batch_texture != tex || batch_shader != shad)
     {
         Rendering::pushBatch();
-        tex->use();
-        shad->use();
-        batch_shader = shad;
-        batch_texture = tex;
+        if (batch_texture != tex)
+            batch_texture = tex;
+        if (batch_shader != shad)
+            batch_shader = shad;
     }
     // top left
     GLVertex vert;
@@ -194,13 +222,10 @@ void Rendering::pushQuad(Rect r, Rect src, Texture* tex, Shader* shad)
     */
 }
 
+
 void Rendering::initRendering(Shader* shad)
 {
-    projection = glm::ortho(0.0f,(float)1280,(float)720, 0.0f, -1.0f, 1.0f);
-
-    shad->use();
-    glUniformMatrix4fv(glGetUniformLocation(shad->shaderProgram, "u_projection"), 1, GL_FALSE, &projection[0][0]);
-
+    project(shad);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
 
@@ -217,13 +242,13 @@ void Rendering::pushBatch()
 {
     if (batch_buffer.size() != 0)
     {
-        //printf("\nDrawing %i", batch_buffer.size());
+        //printf("\nDrawing %i with shader %d", batch_buffer.size(), batch_shader->shaderProgram);
 
         batch_shader->use();
         batch_texture->use();
 
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
+        //glEnable(GL_BLEND);
+        //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
 
         glBindVertexArray(batch_vao);
 

@@ -28,8 +28,7 @@ public:
         glGenTextures(1, &textureID);
         glBindTexture(GL_TEXTURE_2D, textureID);
 		glEnable(GL_TEXTURE_2D);
-        glPixelStorei(GL_UNPACK_ALIGNMENT, 1); 
-		//Use the given buffer
+
         glTexImage2D(
             GL_TEXTURE_2D,
             0,
@@ -66,7 +65,9 @@ public:
         vertex = glCreateShader(GL_VERTEX_SHADER);
         glShaderSource(vertex, 1, &vert, NULL);
         glCompileShader(vertex);
-        
+
+
+
         fragment = glCreateShader(GL_FRAGMENT_SHADER);
         glShaderSource(fragment, 1, &frag, NULL);
         glCompileShader(fragment);
@@ -80,6 +81,16 @@ public:
         glBindAttribLocation(shaderProgram, 2, "v_color");
 
         glLinkProgram(shaderProgram);
+
+        
+        GLint log_length;
+		glGetProgramiv(shaderProgram, GL_INFO_LOG_LENGTH, &log_length);
+			
+		if (log_length > 1)
+		{
+			std::string info_log(log_length, 0);
+			printf("\nProgram Error: &s", info_log.c_str());
+		}
         
         printf("\nSuccessfully compiled shader!");
     }
@@ -106,6 +117,7 @@ struct GLVertex {
 class Rendering {
 public:
     static Shader* generalShader;
+    static Shader* textShader;
 
     static void initRendering(Shader* shad);
     static void pushQuad(Rect r, Rect src, Texture* tex, Shader* shad);
@@ -138,7 +150,6 @@ public:
                 printf("\nFailed to load Glyph");
                 continue;
             }
-            printf("\nCharacter: %d %d ",face->glyph->bitmap.width,face->glyph->bitmap.rows);
             Texture* texture = new Texture(face->glyph->bitmap.width,face->glyph->bitmap.rows,face->glyph->bitmap.buffer);
             Character character = {
                 texture, 
@@ -148,7 +159,6 @@ public:
             };
             Characters[c] = character;
         }
-        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
         FT_Done_Face(face);
     }
@@ -163,7 +173,7 @@ public:
         if (FT_Init_FreeType(&ft))
             printf("\nFailure to init FreeType");
         else
-            printf("\bSuccessfully initialized FreeType");
+            printf("\nSuccessfully initialized FreeType");
     }
 
     static Font* createFontFace(char* path, int size)
@@ -192,7 +202,8 @@ public:
             characterRect.w = ch.Size.x;
             characterRect.h = ch.Size.y;
             startRect.x += (ch.Advance >> 6);
-            Rendering::pushQuad(characterRect, srcRect, ch.tex, Rendering::generalShader);
+            Rendering::pushQuad(characterRect, srcRect, ch.tex, Rendering::textShader);
+            Rendering::pushBatch();
         }
         Rendering::pushBatch();
     }
