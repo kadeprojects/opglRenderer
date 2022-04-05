@@ -6,7 +6,6 @@
 
 GLFWwindow* window = nullptr;
 
-
 class glfw_backend {
 public:
     static double mxx, myy;

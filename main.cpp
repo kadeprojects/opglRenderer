@@ -47,9 +47,13 @@ int main(void)
 
     Rendering::initRendering(Rendering::generalShader);
 
+    freetype_backend::initFreeType();
+
     MenuManager::switchMenu(new Gameplay(), false);
 
-    printf("\nhahah");
+    glEnable(GL_CULL_FACE);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -217,6 +221,9 @@ void Rendering::pushBatch()
 
         batch_shader->use();
         batch_texture->use();
+
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
 
         glBindVertexArray(batch_vao);
 

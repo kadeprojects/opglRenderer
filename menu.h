@@ -159,6 +159,9 @@ public:
         sheet = new SpriteSheet("Assets/tileset.png");
         Sprite* spr = new Sprite(0,0,sheet);
         createObject(spr);
+
+        Text* txt = new Text(40,40,"ARIAL.TTF",62,"test");
+        createObject(txt);
     }
     void update() {
 

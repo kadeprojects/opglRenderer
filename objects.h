@@ -93,3 +93,30 @@ public:
         }
     }
 };
+
+class Text : public Object {
+public:
+    Font* f;
+
+    char* text;
+
+    Text(int _x, int _y, char* fontPath, int size, char* startText) : Object(_x, _y) {
+        f = freetype_backend::createFontFace(fontPath, size);
+        text = startText;
+    }
+    ~Text()
+    {
+        delete f;
+    }
+
+    void draw() {
+        Rect dst, src;
+
+        dst.x = x;
+        dst.y = y;
+        dst.w = w;
+        dst.h = h;
+
+        freetype_backend::drawText(f,dst,text);
+    }
+};
