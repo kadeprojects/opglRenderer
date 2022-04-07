@@ -1,5 +1,6 @@
 #pragma once
+
 class stbi_backend {
 public:
-    static char* getImageFromPath(char* path,int* w,int* h);
+    static char* getImageFromPath(const char* path,int* w,int* h);
 };

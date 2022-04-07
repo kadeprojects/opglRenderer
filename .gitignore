@@ -4,3 +4,10 @@ opglrenderer.exe
 glfw3.dll
 libstdc++-6.dll
 imgui.ini
+vsstudio/ConsoleApplication1/ConsoleApplication1/x64/
+vsstudio/ConsoleApplication1/.vs/
+vsstudio/ConsoleApplication1/ConsoleApplication1/Debug/
+vsstudio/ConsoleApplication1/ConsoleApplication1/ConsoleApplication1.vcxproj.user
+OpenGL Renderer Engine.exe
+OpenGL Renderer Engine.pdb
+OpglRenderer.pdb

@@ -21,9 +21,9 @@ class SpriteSheet {
 public:
     int w, h;
     Texture* sheet;
-    SpriteSheet(char* path)
+    SpriteSheet(std::string path)
     {
-        char* data = stbi_backend::getImageFromPath(path,&w, &h);
+        char* data = stbi_backend::getImageFromPath(path.c_str(), &w, &h);
         printf("\ngot data from %s %ix%i",path, w, h);
         sheet = new Texture(w, h, data);
         printf("\ncreated texture");
@@ -59,8 +59,8 @@ public:
         h = 32;
     }
 
-    Sprite(int _x, int _y, char* spritePath) : Object(_x, _y) {
-        char* data = stbi_backend::getImageFromPath(spritePath,&w, &h);
+    Sprite(int _x, int _y, std::string spritePath) : Object(_x, _y) {
+        char* data = stbi_backend::getImageFromPath(spritePath.c_str(), &w, &h);
         spriteTexture = new Texture(w, h, data);
         printf("\ncreated sprite from texture");
     }
@@ -98,9 +98,9 @@ class Text : public Object {
 public:
     Font* f;
 
-    char* text;
+    std::string text;
 
-    Text(int _x, int _y, char* fontPath, int size, char* startText) : Object(_x, _y) {
+    Text(int _x, int _y, std::string fontPath, int size, std::string startText) : Object(_x, _y) {
         f = freetype_backend::createFontFace(fontPath, size);
         text = startText;
     }
@@ -117,6 +117,6 @@ public:
         dst.w = w;
         dst.h = h;
 
-        freetype_backend::drawText(f,dst,text);
+        freetype_backend::drawText(f,dst,text.c_str());
     }
 };

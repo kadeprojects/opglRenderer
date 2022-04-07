@@ -58,7 +58,7 @@ class Shader {
 public:
     GLuint shaderProgram;
 
-    Shader(char* vert, char* frag)
+    Shader(const char* vert, const char* frag)
     {
         unsigned int vertex, fragment;
 
@@ -176,11 +176,11 @@ public:
             printf("\nSuccessfully initialized FreeType");
     }
 
-    static Font* createFontFace(char* path, int size)
+    static Font* createFontFace(std::string path, int size)
     {
         FT_Face face;
-        if (FT_New_Face(ft, path, 0, &face))
-            printf("\nFailed to load font %s", path);
+        if (FT_New_Face(ft, path.c_str(), 0, &face))
+            printf("\nFailed to load font %s", path.c_str());
         else
         {
             FT_Set_Pixel_Sizes(face, 0, size);  
@@ -188,8 +188,10 @@ public:
         }
     }
 
-    static void drawText(Font* f, Rect startRect, char* text)
+    static void drawText(Font* f, Rect startRect, const char* text)
     {
+        if (f->Characters.size() == 0)
+            return;
         Rect srcRect;
         srcRect.w = 1;
         srcRect.h = 1;

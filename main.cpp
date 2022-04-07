@@ -1,20 +1,20 @@
 #include "menu.h"
 
-char *generic_shader_vert = "\
-#version 150 core\n\
-in vec2 v_position;\
-in vec2 v_uv;\
-in vec4 v_colour;\
-out vec2 f_uv;\
-out vec4 f_colour;\
-uniform mat4 u_projection;\
-void main()\
-{\
-f_uv = v_uv;\
-f_colour = v_colour;\
-gl_Position = u_projection * vec4(v_position.xy, 0.0, 1.0);\
-}";
-char *generic_shader_frag = "\
+const char *generic_shader_vert = R"(
+#version 150 core
+in vec2 v_position;
+in vec2 v_uv;
+in vec4 v_colour;
+out vec2 f_uv;
+out vec4 f_colour;
+uniform mat4 u_projection;
+void main()
+{
+f_uv = v_uv;
+f_colour = v_colour;
+gl_Position = u_projection * vec4(v_position.xy, 0.0, 1.0);
+})";
+const char* generic_shader_frag = "\
 #version 150 core\n\
 uniform sampler2D u_texture;\
 in vec2 f_uv;\
@@ -29,7 +29,7 @@ discard;\
 }\
 }";
 
-char *text_frag = "\
+const char* text_frag = "\
 #version 150 core\n\
 uniform sampler2D u_texture;\
 in vec2 f_uv;\
@@ -45,6 +45,9 @@ if (o_colour.a == 0.0)\
 discard;\
 }\
 }";
+
+#pragma comment(lib, "freetype.lib")
+#pragma comment(lib, "glfw3.lib")
 
 glm::mat4 projection;
 
