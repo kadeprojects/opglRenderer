@@ -3,6 +3,7 @@
 class Menu {
 public:
     std::vector<Object*> objects;
+    std::vector<Object*> topMost;
     bool created = false;
     virtual void create() {};
     virtual void update() = 0;
@@ -11,10 +12,15 @@ public:
     void draw() {
         for(Object* obj : objects)
             obj->draw();
+        for (Object* obj : topMost)
+            obj->draw();
     };
 
-    void createObject(Object* ob) {
-        objects.push_back(ob);
+    void createObject(Object* ob, bool topMostt = false) {
+        if (!topMostt)
+            objects.push_back(ob);
+        else
+            topMost.push_back(ob);
     }
     void deleteObject(Object* ob) {
         for(int i = 0; i < objects.size(); i++)
@@ -22,6 +28,14 @@ public:
             if (objects[i]->id == ob->id)
             {
                 objects.erase(objects.begin() + i);
+                break;
+            }
+        }
+        for (int i = 0; i < topMost.size(); i++)
+        {
+            if (objects[i]->id == ob->id)
+            {
+                topMost.erase(topMost.begin() + i);
                 break;
             }
         }
@@ -71,7 +85,7 @@ class EditorMenu : public Menu {
 public:
     SpriteSheet* sheet;
     Sprite* highlight;
-
+    Sprite* selectBox;
     std::vector<Object*> sprites;
 
     int lastx, lasty;
@@ -88,7 +102,10 @@ public:
     void create() {
         sheet = new SpriteSheet("Assets/tileset.png");
         highlight = new Sprite(0,0,"Assets/highlight.png");
+        selectBox = new Sprite(-32, -32, sheet, 4);
+
         createObject(highlight);
+        createObject(selectBox, true);
         created = true;
     }
     void update() {
@@ -110,6 +127,10 @@ public:
             Object* spr = sprites[selectInd];
             if (spr)
             {
+                selectBox->x = spr->x;
+                selectBox->y = spr->y;
+                selectBox->w = spr->w;
+                selectBox->h = spr->h;
                 if (spr->specialTag == 0)
                 {
                     Rect src = sheet->returnSrc(((Sprite*)spr)->spriteIndex);
@@ -212,6 +233,9 @@ public:
                         text = new Text(highlight->x, highlight->y, "ARIAL.TTF", 16, "defaultText");
                         sprites.push_back(text);
                         createObject(text);
+                        break;
+                    case 4:
+                        // dont make anything haha
                         break;
                     }
                     selectInd = sprites.size() - 1;

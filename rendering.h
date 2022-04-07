@@ -232,7 +232,7 @@ public:
         }
     }
 
-    static void drawText(Font* f, Rect startRect, const char* text)
+    static void drawText(Font* f, Rect startRect, const char* text, int* w)
     {
         if (f->Characters.size() == 0)
             return;
@@ -241,6 +241,10 @@ public:
         srcRect.y = 0;
         srcRect.w = 1;
         srcRect.h = 1;
+        int startX = startRect.x;
+        int startY = startRect.y;
+        int nextX = 0;
+        int nextY = 0;
         for(char c : std::string(text))
         {
             Character ch = f->Characters[c];
@@ -249,10 +253,14 @@ public:
             characterRect.y = startRect.y - ch.Bearing.y;
             characterRect.w = ch.Size.x;
             characterRect.h = ch.Size.y;
+            nextX = characterRect.x + characterRect.w;
+            if (characterRect.y + characterRect.h > nextY)
+                nextY = characterRect.y + characterRect.h;
             startRect.x += (ch.Advance >> 6);
             Rendering::pushQuad(characterRect, srcRect, ch.tex, Rendering::textShader);
             Rendering::pushBatch();
         }
+        *w = nextX - startX;
         Rendering::pushBatch();
     }
 };

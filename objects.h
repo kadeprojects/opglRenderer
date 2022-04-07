@@ -131,8 +131,8 @@ public:
         dst.x = x;
         dst.y = y;
         dst.w = w;
-        dst.h = h;
+        dst.h = _size;
 
-        freetype_backend::drawText(f,dst,text.c_str());
+        freetype_backend::drawText(f,dst,text.c_str(), &w);
     }
 };
