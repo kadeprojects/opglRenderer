@@ -71,11 +71,13 @@ public:
     SpriteSheet* sheet;
     Sprite* highlight;
 
-    std::vector<Sprite*> sprites;
+    std::vector<Object*> sprites;
 
     int lastx, lasty;
 
     int spriteIndex = 0;
+
+    int selectInd = 0;
 
     void key(int key,int mods)
     {
@@ -96,29 +98,127 @@ public:
 
         highlight->x = Helpers::Align(mx,32);
         highlight->y = Helpers::Align(my,32);
+        bool hovered = false;
 
-        if (glfw_backend::isMouseDown())
+        // Editor imgui
+        ImGui::Begin("Object Properties");
+
+        ImGui::SetWindowSize(ImVec2(400, 200));
+        if (sprites.size() != 0)
+        {
+            Object* spr = sprites[selectInd];
+            if (spr)
+            {
+                if (spr->specialTag == 0)
+                {
+                    Rect src = sheet->returnSrc(((Sprite*)spr)->spriteIndex);
+
+                    float tl = src.x;
+                    float br = tl + src.w;
+                    ImGui::Image((ImTextureID)sheet->sheet->textureID, ImVec2(32, 32), ImVec2(tl, 0), ImVec2(br, 1));
+                }
+                ImGui::Text("X:");
+                ImGui::InputInt("##InputDoublePropX", &spr->x, 32, 64);
+                ImGui::Text("Y:");
+                ImGui::InputInt("##InputDoublePropY", &spr->y, 32, 64);
+
+                spr->x = Helpers::Align(spr->x, 32);
+                spr->y = Helpers::Align(spr->y, 32);
+
+                switch (spr->specialTag)
+                {
+                case 1: // text
+                    Text* text = (Text*)spr;
+                    ImGui::Text("Text:");
+                    char* buf = (char*)malloc(sizeof(char*) * 620);
+                    ImGui::InputText("##InputText", buf, 620);
+                    text->text = std::string(buf);
+                    break;
+                }
+            }
+        }
+
+        if (ImGui::IsWindowHovered() || ImGui::IsAnyItemHovered())
+            hovered = true;
+
+        ImGui::End();
+
+        ImGui::Begin("Assets", 0, ImGuiWindowFlags_NoResize);
+        ImGui::SetWindowSize(ImVec2(sheet->w + 256, 128));
+
+        for (int i = 0; i < sheet->w / 32; i++)
+        {
+            Rect src = sheet->returnSrc(i);
+
+            float tl = src.x;
+            float br = tl + src.w;
+
+            ImGui::PushID(i * 200);
+            if (ImGui::ImageButton((ImTextureID)sheet->sheet->textureID, ImVec2(32, 32), ImVec2(tl, 0), ImVec2(br, 1)))
+            {
+                spriteIndex = i;
+                printf("\nSeleted: %d", i);
+            }
+            ImGui::PopID();
+            ImGui::SameLine();
+        }
+
+        ImGui::NewLine();
+        ImGui::Text("Selected: %d | Cursor: %d,%d", spriteIndex, highlight->x, highlight->y);
+
+        if (ImGui::IsWindowHovered() || ImGui::IsAnyItemHovered())
+            hovered = true;
+
+        ImGui::End();
+
+        if (glfw_backend::isMouseDown() && !hovered)
         {
             if (lastx != highlight->x && lasty != highlight->y)
             {
                 bool keepgoin = true;
-                for(Sprite* sprr : sprites)
+                for (Object* sprr : sprites)
                 {
                     if (sprr->x == highlight->x && sprr->y == highlight->y)
+                    {
                         keepgoin = false;
+                        break;
+                    }
+                    selectInd++;
                 }
-                if (!keepgoin)
-                    return;
-                Sprite* spr = new Sprite(highlight->x,highlight->y, sheet, spriteIndex);
-                sprites.push_back(spr);
-                createObject(spr);
+                if (keepgoin)
+                {
+                    Sprite* spr = nullptr;
+                    Text* text = nullptr;
+                    switch (spriteIndex)
+                    {
+                    default:
+                        spr = new Sprite(highlight->x, highlight->y, sheet, spriteIndex);
+                        sprites.push_back(spr);
+                        createObject(spr);
+                        break;
+                    case 3:
+                        text = new Text(highlight->x, highlight->y, "ARIAL.TTF", 16, "defaultText");
+                        sprites.push_back(text);
+                        createObject(text);
+                        break;
+                    }
+                    
+                }
             }
 
         }
 
-
-        // Editor imgui
-
+        if (glfw_backend::isRightMouseDown() && !hovered)
+        {
+            for (Object* sprr : sprites)
+            {
+                if (sprr->x == highlight->x && sprr->y == highlight->y)
+                {
+                    deleteObject(sprr);
+                    break;
+                }
+            }
+        }
     }
 
     ~EditorMenu()
@@ -153,9 +253,7 @@ public:
         created = true;
     }
     void update() {
-        ImGui::Begin("Assets");
-        ImGui::Image((ImTextureID)sheet->sheet->textureID, ImVec2(sheet->w,sheet->h), ImVec2(0, 1), ImVec2(1, 0));
-        ImGui::End();
+
     }
 
     ~Gameplay()

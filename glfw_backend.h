@@ -38,6 +38,18 @@ public:
         return mouseState == GLFW_RELEASE ? true : false;
     }
 
+    static bool isRightMouseDown()
+    {
+        int mouseState = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT);
+        return mouseState == GLFW_PRESS ? true : false;
+    }
+
+    static bool isRightMouseReleased()
+    {
+        int mouseState = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT);
+        return mouseState == GLFW_RELEASE ? true : false;
+    }
+
     static void createWindow(GLFWkeyfun keyCallback)
     {
         if (!glfwInit())

@@ -5,6 +5,7 @@ public:
     int id;
     int x, y;
     int w, h;
+    int specialTag;
     Object(int _x, int _y)
     {
         static int globalId;
@@ -24,7 +25,7 @@ public:
     SpriteSheet(std::string path)
     {
         char* data = stbi_backend::getImageFromPath(path.c_str(), &w, &h);
-        printf("\ngot data from %s %ix%i",path, w, h);
+        printf("\ngot data from %s %fx%f",path.c_str(), w, h);
         sheet = new Texture(w, h, data);
         printf("\ncreated texture");
     }
@@ -53,6 +54,7 @@ public:
     int spriteIndex = 0;
     Sprite(int _x, int _y, SpriteSheet* _sheet, int _spriteIndex = 0) : Object(_x, _y) {
         sheet = _sheet;
+        specialTag = 0;
         spriteIndex = _spriteIndex;
         printf("\ncreated sprite from sheet");
         w = 32;
@@ -101,6 +103,7 @@ public:
     std::string text;
 
     Text(int _x, int _y, std::string fontPath, int size, std::string startText) : Object(_x, _y) {
+        specialTag = 1;
         f = freetype_backend::createFontFace(fontPath, size);
         text = startText;
     }
