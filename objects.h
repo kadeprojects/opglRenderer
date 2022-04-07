@@ -15,6 +15,8 @@ public:
         y = _y;
     }
 
+    virtual ~Object() {};
+
     virtual void draw() {}
 };
 
@@ -101,18 +103,29 @@ public:
     Font* f;
 
     std::string text;
+    std::string _fontPath;
+    int _size = 0;
 
     Text(int _x, int _y, std::string fontPath, int size, std::string startText) : Object(_x, _y) {
         specialTag = 1;
+        _size = size;
+        _fontPath = fontPath;
         f = freetype_backend::createFontFace(fontPath, size);
         text = startText;
     }
-    ~Text()
+
+
+    void SetSize(int newSize)
     {
         delete f;
+        _size = newSize;
+        f = freetype_backend::createFontFace(_fontPath, newSize);
     }
 
     void draw() {
+        if (!f)
+            return;
+
         Rect dst, src;
 
         dst.x = x;

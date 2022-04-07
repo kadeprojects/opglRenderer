@@ -42,6 +42,7 @@ public:
                 currentMenu->deleteObject(ob);
             delete currentMenu;
         }
+        freetype_backend::clearFontCache();
         currentMenu = ofMenu;
         currentMenu->create();
         printf("\nswitched!");
@@ -116,7 +117,9 @@ public:
                     float tl = src.x;
                     float br = tl + src.w;
                     ImGui::Image((ImTextureID)sheet->sheet->textureID, ImVec2(32, 32), ImVec2(tl, 0), ImVec2(br, 1));
+                    ImGui::SameLine();
                 }
+                ImGui::Text("Id: %d", spr->id);
                 ImGui::Text("X:");
                 ImGui::InputInt("##InputDoublePropX", &spr->x, 32, 64);
                 ImGui::Text("Y:");
@@ -128,15 +131,23 @@ public:
                 switch (spr->specialTag)
                 {
                 case 1: // text
-                    Text* text = (Text*)spr;
+                    Text * text = (Text*)spr;
                     ImGui::Text("Text:");
-                    char* buf = (char*)malloc(sizeof(char*) * 620);
-                    ImGui::InputText("##InputText", buf, 620);
+                    char buf[240];
+                    strcpy_s(buf, text->text.c_str());
+                    ImGui::InputText("##InputText", buf, 240);
                     text->text = std::string(buf);
+                    int size = text->_size;
+                    ImGui::Text("Font Size:");
+                    ImGui::InputInt("##InputSIze", &size);
+                    if (size != text->_size)
+                        text->SetSize(size);
                     break;
                 }
             }
         }
+        else
+            ImGui::Text("Please create an object.");
 
         if (ImGui::IsWindowHovered() || ImGui::IsAnyItemHovered())
             hovered = true;
@@ -176,6 +187,7 @@ public:
             if (lastx != highlight->x && lasty != highlight->y)
             {
                 bool keepgoin = true;
+                selectInd = 0;
                 for (Object* sprr : sprites)
                 {
                     if (sprr->x == highlight->x && sprr->y == highlight->y)
@@ -202,7 +214,7 @@ public:
                         createObject(text);
                         break;
                     }
-                    
+                    selectInd = sprites.size() - 1;
                 }
             }
 
@@ -210,13 +222,17 @@ public:
 
         if (glfw_backend::isRightMouseDown() && !hovered)
         {
+            int index = 0;
             for (Object* sprr : sprites)
             {
                 if (sprr->x == highlight->x && sprr->y == highlight->y)
                 {
                     deleteObject(sprr);
+                    sprites.erase(sprites.begin() + index);
+                    selectInd = 0;
                     break;
                 }
+                index++;
             }
         }
     }

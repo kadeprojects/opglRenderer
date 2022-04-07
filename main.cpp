@@ -14,37 +14,37 @@ f_uv = v_uv;
 f_colour = v_colour;
 gl_Position = u_projection * vec4(v_position.xy, 0.0, 1.0);
 })";
-const char* generic_shader_frag = "\
-#version 150 core\n\
-uniform sampler2D u_texture;\
-in vec2 f_uv;\
-in vec4 f_colour;\
-out vec4 o_colour;\
-void main()\
-{\
-o_colour = texture(u_texture, f_uv) * f_colour;\
-if (o_colour.a == 0.0)\
-{\
-discard;\
-}\
-}";
+const char* generic_shader_frag = R"(
+#version 150 core
+uniform sampler2D u_texture;
+in vec2 f_uv;
+in vec4 f_colour;
+out vec4 o_colour;
+void main()
+{
+o_colour = texture(u_texture, f_uv) * f_colour;
+if (o_colour.a == 0.0)
+{
+discard;
+}
+})";
 
-const char* text_frag = "\
-#version 150 core\n\
-uniform sampler2D u_texture;\
-in vec2 f_uv;\
-in vec4 f_colour;\
-uniform vec3 textColor;\
-out vec4 o_colour;\
-void main()\
-{\
-vec4 sampled = vec4(1.0, 1.0, 1.0, texture(u_texture, f_uv).r);\
-o_colour = texture(u_texture, f_uv) * sampled;\
-if (o_colour.a == 0.0)\
-{\
-discard;\
-}\
-}";
+const char* text_frag = R"(
+#version 150 core
+uniform sampler2D u_texture;
+in vec2 f_uv;
+in vec4 f_colour;
+uniform vec3 textColor;
+out vec4 o_colour;
+void main()
+{
+vec4 sampled = vec4(1.0, 1.0, 1.0, texture(u_texture, f_uv).r);
+o_colour = texture(u_texture, f_uv) * sampled;
+if (o_colour.a == 0.0)
+{
+discard;
+}
+})";
 
 #pragma comment(lib, "freetype.lib")
 #pragma comment(lib, "glfw3.lib")
@@ -112,8 +112,6 @@ int main(void)
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-
     while (!glfwWindowShouldClose(window))
     {
         glfwPollEvents();
@@ -124,7 +122,7 @@ int main(void)
 
         glViewport(0, 0, 1280, 720);
         glClear(GL_COLOR_BUFFER_BIT);
-        glClearColor(1,.5,.5,1);
+        glClearColor(0.6,.2,.2,1);
 
         MenuManager::currentMenu->update();
 

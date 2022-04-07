@@ -6,6 +6,8 @@ class Texture {
 public:
     GLuint textureID;
 
+    unsigned char* _data;
+
     Texture(int width, int height, char* data)
     {
         glGenTextures(1, &textureID);
@@ -20,15 +22,18 @@ public:
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        _data = (unsigned char*)data;
 
     }
 
     Texture(int width, int height, unsigned char* data)
     {
+        _data = data;
         glGenTextures(1, &textureID);
         glBindTexture(GL_TEXTURE_2D, textureID);
 		glEnable(GL_TEXTURE_2D);
-
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
         glTexImage2D(
             GL_TEXTURE_2D,
             0,
@@ -45,7 +50,12 @@ public:
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glBindTexture(GL_TEXTURE_2D, 0);
+    }
 
+    ~Texture()
+    {
+        glDeleteTextures(1, &textureID);
     }
 
     void use()
@@ -103,9 +113,9 @@ public:
 
 struct Rect {
     // cordinates
-    float x,y;
+    float x = 0,y = 0;
     // width, height, depth
-    float w, h, size;
+    float w = 0, h = 0, size = 0;
 };
 struct GLVertex {
     float x, y;
@@ -138,9 +148,13 @@ class Font {
 public:
     std::unordered_map<char, Character> Characters;
 
+    std::string name;
+
     Font(FT_Face face)
     {
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // disable byte-alignment restriction
+
+        name = face->style_name;
   
         for (unsigned char c = 0; c < 128; c++)
         {
@@ -155,16 +169,25 @@ public:
                 texture, 
                 glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
                 glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
-                face->glyph->advance.x
+                static_cast<unsigned int>(face->glyph->advance.x)
             };
             Characters[c] = character;
         }
 
         FT_Done_Face(face);
     }
+
+    ~Font()
+    {
+        for (unsigned char c = 0; c < 128; c++)
+        {
+            delete Characters[c].tex;
+        }
+        Characters.clear();
+    }
 };
 
-std::unordered_map<char*, Font*> ft_fontFaces;
+std::unordered_map<std::string, Font*> ft_fontFaces;
 
 class freetype_backend {
 public:
@@ -176,15 +199,36 @@ public:
             printf("\nSuccessfully initialized FreeType");
     }
 
+    static void clearFontCache()
+    {
+        for (auto const& x : ft_fontFaces)
+        {
+            delete x.second;
+        }
+        ft_fontFaces.clear();
+    }
+
     static Font* createFontFace(std::string path, int size)
     {
         FT_Face face;
         if (FT_New_Face(ft, path.c_str(), 0, &face))
+        {
             printf("\nFailed to load font %s", path.c_str());
+            FT_Done_Face(face);
+        }
         else
         {
-            FT_Set_Pixel_Sizes(face, 0, size);  
-            return new Font(face);
+            std::string name = face->family_name + std::to_string(size);
+
+            if (ft_fontFaces[name] != nullptr)
+            {
+                FT_Done_Face(face);
+                return ft_fontFaces[name];
+            }
+
+            FT_Set_Pixel_Sizes(face, 0, size);
+            ft_fontFaces[name] = new Font(face);
+            return ft_fontFaces[name];
         }
     }
 
@@ -193,6 +237,8 @@ public:
         if (f->Characters.size() == 0)
             return;
         Rect srcRect;
+        srcRect.x = 0;
+        srcRect.y = 0;
         srcRect.w = 1;
         srcRect.h = 1;
         for(char c : std::string(text))
@@ -200,7 +246,7 @@ public:
             Character ch = f->Characters[c];
             Rect characterRect;
             characterRect.x = startRect.x + ch.Bearing.x;
-            characterRect.y = startRect.y - (ch.Size.y - ch.Bearing.y);
+            characterRect.y = startRect.y - ch.Bearing.y;
             characterRect.w = ch.Size.x;
             characterRect.h = ch.Size.y;
             startRect.x += (ch.Advance >> 6);
