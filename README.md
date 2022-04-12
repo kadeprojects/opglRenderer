@@ -11,3 +11,5 @@ Stuff thats used:
 [FreeType](https://freetype.org/) - font rendering
 
 [ImGui](https://github.com/ocornut/imgui) - debug windows/level creation
+
+the rest I made and cobbled together.
