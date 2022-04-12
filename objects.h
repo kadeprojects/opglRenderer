@@ -102,6 +102,8 @@ class Text : public Object {
 public:
     Font* f;
 
+    Color color;
+
     std::string text;
     std::string _fontPath;
     int _size = 0;
@@ -109,6 +111,7 @@ public:
     Text(int _x, int _y, std::string fontPath, int size, std::string startText) : Object(_x, _y) {
         specialTag = 1;
         _size = size;
+        color = { 255,255,255,1 };
         _fontPath = fontPath;
         f = freetype_backend::createFontFace(fontPath, size);
         text = startText;
@@ -117,6 +120,7 @@ public:
 
     void SetSize(int newSize)
     {
+        freetype_backend::removeFontFromCache(f->name);
         delete f;
         _size = newSize;
         f = freetype_backend::createFontFace(_fontPath, newSize);
@@ -127,11 +131,11 @@ public:
             return;
 
         Rect dst, src;
-
         dst.x = x;
         dst.y = y;
         dst.w = w;
         dst.h = _size;
+        dst.color = color;
 
         freetype_backend::drawText(f,dst,text.c_str(), &w);
     }

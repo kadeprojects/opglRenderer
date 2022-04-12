@@ -160,7 +160,17 @@ public:
                     text->text = std::string(buf);
                     int size = text->_size;
                     ImGui::Text("Font Size:");
-                    ImGui::InputInt("##InputSIze", &size);
+                    ImGui::SliderInt("##InputSIze", &size, 1, 64);
+                    ImGui::Text("Font Color (And Alpha):");
+                    float c[4] = {text->color.r / 255.f,text->color.g / 255.f,text->color.b / 255.f,text->color.a};
+                    ImGui::ColorEdit4("##InputColor", c);
+
+                    text->color = {c[0] * 255.f,c[1] * 255.f,c[2] * 255.f,c[3]};
+
+                    printf("\nR: %f, G: %f, B:%f", text->color.r, text->color.g, text->color.b);
+
+                    if (size > 64)
+                        size = 64;
                     if (size != text->_size)
                         text->SetSize(size);
                     break;

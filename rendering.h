@@ -111,11 +111,17 @@ public:
     }
 };
 
+struct Color{
+    float r, g, b;
+    float a;
+};
+
 struct Rect {
     // cordinates
     float x = 0,y = 0;
     // width, height, depth
     float w = 0, h = 0, size = 0;
+    Color color = {255,255,255,1};
 };
 struct GLVertex {
     float x, y;
@@ -173,7 +179,7 @@ public:
             };
             Characters[c] = character;
         }
-
+        printf("\nLoaded font with %d", Characters.size());
         FT_Done_Face(face);
     }
 
@@ -197,6 +203,18 @@ public:
             printf("\nFailure to init FreeType");
         else
             printf("\nSuccessfully initialized FreeType");
+    }
+
+    static void removeFontFromCache(std::string font)
+    {
+        for (auto i = ft_fontFaces.begin(); i != ft_fontFaces.end(); i++)
+        {
+            if (i->second->name == font)
+            {
+                ft_fontFaces.erase(i->first);
+                break;
+            }
+        }
     }
 
     static void clearFontCache()
@@ -245,6 +263,8 @@ public:
         int startY = startRect.y;
         int nextX = 0;
         int nextY = 0;
+        Rendering::textShader->use();
+        glUniform3f(glGetUniformLocation(Rendering::textShader->shaderProgram, "textColor"), startRect.color.r, startRect.color.g, startRect.color.b);
         for(char c : std::string(text))
         {
             Character ch = f->Characters[c];
@@ -257,6 +277,7 @@ public:
             if (characterRect.y + characterRect.h > nextY)
                 nextY = characterRect.y + characterRect.h;
             startRect.x += (ch.Advance >> 6);
+           
             Rendering::pushQuad(characterRect, srcRect, ch.tex, Rendering::textShader);
             Rendering::pushBatch();
         }

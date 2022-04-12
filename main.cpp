@@ -39,7 +39,7 @@ out vec4 o_colour;
 void main()
 {
 vec4 sampled = vec4(1.0, 1.0, 1.0, texture(u_texture, f_uv).r);
-o_colour = texture(u_texture, f_uv) * sampled;
+o_colour = vec4(textColor, 1.0) * sampled;
 if (o_colour.a == 0.0)
 {
 discard;
@@ -180,10 +180,10 @@ void Rendering::pushQuad(Rect r, Rect src, Texture* tex, Shader* shad)
     vert.u = src.x;
     vert.v = src.y;
     //vert.z = r.z;
-    vert.r = 1;
-    vert.g = 1;
-    vert.b = 1;
-    vert.a = 1;
+    vert.r = r.color.r / 255;
+    vert.g = r.color.g / 255;
+    vert.b = r.color.b / 255;
+    vert.a = r.color.a;
     // bottom left
     GLVertex vert1;
     vert1.x = r.x;
@@ -191,10 +191,10 @@ void Rendering::pushQuad(Rect r, Rect src, Texture* tex, Shader* shad)
     vert1.u = src.x;
     vert1.v = src.y + src.h;
     //vert1.z = r.z;
-    vert1.r = 1;
-    vert1.g = 1;
-    vert1.b = 1;
-    vert1.a = 1;
+    vert1.r = r.color.r / 255;
+    vert1.g = r.color.g / 255;
+    vert1.b = r.color.b / 255;
+    vert1.a = r.color.a;
     // top right
     GLVertex vert2;
     vert2.x = r.x + r.w;
@@ -202,10 +202,10 @@ void Rendering::pushQuad(Rect r, Rect src, Texture* tex, Shader* shad)
     vert2.u = src.x + src.w;
     vert2.v = src.y;
     //vert2.z = r.z;
-    vert2.r = 1;
-    vert2.g = 1;
-    vert2.b = 1;
-    vert2.a = 1;
+    vert2.r = r.color.r / 255;
+    vert2.g = r.color.g / 255;
+    vert2.b = r.color.b / 255;
+    vert2.a = r.color.a;
     // bottom right
     GLVertex vert3;
     vert3.x = r.x + r.w;
@@ -213,10 +213,10 @@ void Rendering::pushQuad(Rect r, Rect src, Texture* tex, Shader* shad)
     vert3.u = src.x + src.w;
     vert3.v = src.y + src.h;
     //vert3.z = r.z;
-    vert3.r = 1;
-    vert3.g = 1;
-    vert3.b = 1;
-    vert3.a = 1;
+    vert3.r = r.color.r / 255;
+    vert3.g = r.color.g / 255;
+    vert3.b = r.color.b / 255;
+    vert3.a = r.color.a;
     batch_buffer.push_back(vert);
     batch_buffer.push_back(vert1);
     batch_buffer.push_back(vert2);
