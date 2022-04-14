@@ -38,12 +38,12 @@ uniform vec3 textColor;
 out vec4 o_colour;
 void main()
 {
-vec4 sampled = vec4(1.0, 1.0, 1.0, texture(u_texture, f_uv).r);
-o_colour = vec4(textColor, 1.0) * sampled;
-if (o_colour.a == 0.0)
-{
-discard;
-}
+    vec4 sampled = vec4(1.0, 1.0, 1.0, texture(u_texture, f_uv).r);
+    o_colour = vec4(textColor, 1.0) * sampled;
+    if (o_colour.a == 0.0)
+    {
+        discard;
+    }
 })";
 
 #pragma comment(lib, "freetype.lib")

@@ -51,6 +51,7 @@ public:
 class Sprite : public Object {
 public:
     Texture* spriteTexture;
+    std::string spritePath;
 
     SpriteSheet* sheet;
     int spriteIndex = 0;
@@ -63,9 +64,10 @@ public:
         h = 32;
     }
 
-    Sprite(int _x, int _y, std::string spritePath) : Object(_x, _y) {
-        char* data = stbi_backend::getImageFromPath(spritePath.c_str(), &w, &h);
+    Sprite(int _x, int _y, std::string _spritePath) : Object(_x, _y) {
+        char* data = stbi_backend::getImageFromPath(_spritePath.c_str(), &w, &h);
         spriteTexture = new Texture(w, h, data);
+        spritePath = _spritePath;
         printf("\ncreated sprite from texture");
     }
 

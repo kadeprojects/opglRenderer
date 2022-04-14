@@ -87,5 +87,8 @@
     <ClInclude Include="..\..\..\imgui\imstb_truetype.h">
       <Filter>Source Files\ImGui</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\level.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

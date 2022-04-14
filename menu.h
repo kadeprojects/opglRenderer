@@ -1,4 +1,4 @@
-#include "objects.h"
+#include "level.h"
 
 class Menu {
 public:
@@ -88,6 +88,8 @@ public:
     Sprite* selectBox;
     std::vector<Object*> sprites;
 
+    Level currentLevel;
+
     int lastx, lasty;
 
     int spriteIndex = 0;
@@ -96,13 +98,26 @@ public:
 
     void key(int key,int mods)
     {
-
+        switch (key)
+        {
+        case GLFW_KEY_S:
+            LevelParser::saveLevel(currentLevel, "test.lvl");
+            break;
+        }
     }
 
     void create() {
+        currentLevel = LevelParser::parseLevel("test.lvl");
         sheet = new SpriteSheet("Assets/tileset.png");
         highlight = new Sprite(0,0,"Assets/highlight.png");
         selectBox = new Sprite(-32, -32, sheet, 4);
+
+        for (Object* obj : currentLevel.objects)
+        {
+            sprites.push_back(obj);
+            createObject(obj);
+        }
+        selectInd = sprites.size() - 1;
 
         createObject(highlight);
         createObject(selectBox, true);
@@ -237,11 +252,13 @@ public:
                     default:
                         spr = new Sprite(highlight->x, highlight->y, sheet, spriteIndex);
                         sprites.push_back(spr);
+                        currentLevel.objects.push_back(spr);
                         createObject(spr);
                         break;
                     case 3:
                         text = new Text(highlight->x, highlight->y, "ARIAL.TTF", 16, "defaultText");
                         sprites.push_back(text);
+                        currentLevel.objects.push_back(text);
                         createObject(text);
                         break;
                     case 4:
@@ -262,6 +279,7 @@ public:
                 if (sprr->x == highlight->x && sprr->y == highlight->y)
                 {
                     deleteObject(sprr);
+                    currentLevel.objects.erase(currentLevel.objects.begin() + index);
                     sprites.erase(sprites.begin() + index);
                     selectInd = 0;
                     break;
