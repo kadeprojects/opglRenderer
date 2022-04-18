@@ -5,16 +5,10 @@ struct Level {
 	std::vector<Object*> objects;
 };
 
-// pretty much a class of stolen code!
+// pretty much a class of stolen code! (well they're helper functions, code that has been used
+// many many times and I really didn't want to make myself because they're super simple)
 class LevelHelpers {
 public:
-	// from https://github.com/Load-Ma/cppXor/blob/master/cppXor/cppXor.cpp
-	static std::string xorstr(const char* msg, const char* key) {
-		std::string result;
-		for (int i = 0; i < strlen(msg); i++)
-			result.push_back(msg[i] ^ key[i % sizeof(key)]);
-		return result;
-	}
 	// https://stackoverflow.com/a/46931770
 	static std::vector<std::string> split(std::string s, std::string delimiter) {
 		size_t pos_start = 0, pos_end, delim_len = delimiter.length();
@@ -32,9 +26,6 @@ public:
 	}
 };
 
-// change this if you want, but it's visible in strings anyways so it legit doesn't matter.
-// this is just for funnyness points
-const char* hilarious = "420funnynumberhaha";
 
 class LevelParser {
 public:
@@ -81,7 +72,6 @@ public:
 			}
 			std::string obj = l;
 			std::vector<std::string> s = LevelHelpers::split(obj, ":");
-			printf("\noutput: %s", obj.c_str());
 			for (int i = 0; i < s.size(); i++)
 			{
 				switch (i)
