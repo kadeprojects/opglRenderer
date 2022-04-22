@@ -107,7 +107,7 @@ public:
 						break;
 					case 0:
 						// sprite atlas
-						sp1 = s[i];
+						sp2 = s[i];
 						break;
 					}
 					break;
@@ -127,11 +127,13 @@ public:
 			switch (specialTag)
 			{
 			case 0:
-				spr = new Sprite(x, y, sp1.size() == 0 ? "" : sp1);
-				if (sp1.size() == 0)
+				spr = new Sprite(x, y, sp1 == "null" ? "" : sp1);
+				if (sp1 == "null")
 				{
 					spr->spriteIndex = std::stoi(sp2);
 					spr->spriteTexture = nullptr;
+					spr->w = 32;
+					spr->h = 32;
 				}
 				output.objects.push_back(spr);
 				break;
@@ -147,6 +149,7 @@ public:
 
 	static void saveLevel(Level l, std::string savepath)
 	{
+		l.ver = 1;
 		std::string levelString = "// generated via level edtior\n" + std::to_string(l.ver);
 		for (Object* obj : l.objects)
 		{

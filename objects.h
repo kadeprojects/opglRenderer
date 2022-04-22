@@ -73,7 +73,8 @@ public:
 
     ~Sprite()
     {
-        delete spriteTexture;
+        if (spriteTexture)
+            delete spriteTexture;
     }
 
     void draw() {

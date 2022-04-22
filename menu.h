@@ -114,6 +114,8 @@ public:
 
         for (Object* obj : currentLevel.objects)
         {
+            if (obj->specialTag == 0)
+                ((Sprite*)obj)->sheet = sheet;
             sprites.push_back(obj);
             createObject(obj);
         }
@@ -181,8 +183,6 @@ public:
                     ImGui::ColorEdit4("##InputColor", c);
 
                     text->color = {c[0] * 255.f,c[1] * 255.f,c[2] * 255.f,c[3]};
-
-                    printf("\nR: %f, G: %f, B:%f", text->color.r, text->color.g, text->color.b);
 
                     if (size > 64)
                         size = 64;
@@ -299,7 +299,9 @@ public:
 class Gameplay : public Menu {
 public:
     SpriteSheet* sheet;
-    std::vector<Sprite*> sprites;
+    std::vector<Object*> sprites;
+
+    Level currentLevel;
 
     void key(int key,int mods)
     {
@@ -312,6 +314,7 @@ public:
     }
 
     void create() {
+        currentLevel = LevelParser::parseLevel("test.lvl");
         sheet = new SpriteSheet("Assets/tileset.png");
         Sprite* spr = new Sprite(0,0,sheet);
         createObject(spr);
@@ -319,6 +322,14 @@ public:
         Text* txt = new Text(40,40,"ARIAL.TTF",62,"test");
         createObject(txt);
         created = true;
+
+        for (Object* obj : currentLevel.objects)
+        {
+            if (obj->specialTag == 0)
+                ((Sprite*)obj)->sheet = sheet;
+            sprites.push_back(obj);
+            createObject(obj);
+        }
     }
     void update() {
 
